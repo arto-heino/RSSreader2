@@ -9,4 +9,5 @@ public class PostData {
     public String postDate;
     public String postLink;
     public String postContent;
+    public String postDesc;
 }

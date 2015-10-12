@@ -30,6 +30,7 @@ public class PostItemAdapter extends ArrayAdapter<PostData> {
     static class ViewHolder {
         TextView postTitleView;
         TextView postDateView;
+        TextView postDescView;
         ImageView postThumbView;
     }
 
@@ -46,6 +47,8 @@ public class PostItemAdapter extends ArrayAdapter<PostData> {
                     .findViewById(R.id.postTitleLabel);
             viewHolder.postDateView = (TextView) convertView
                     .findViewById(R.id.postDateLabel);
+            viewHolder.postDescView = (TextView) convertView
+                    .findViewById(R.id.postDescLabel);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -58,6 +61,7 @@ public class PostItemAdapter extends ArrayAdapter<PostData> {
 
         viewHolder.postTitleView.setText(datas.get(position).postTitle);
         viewHolder.postDateView.setText(datas.get(position).postDate);
+        viewHolder.postDescView.setText(datas.get(position).postDesc);
 
         return convertView;
     }

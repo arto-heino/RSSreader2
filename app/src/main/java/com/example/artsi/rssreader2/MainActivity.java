@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -14,6 +15,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,11 +29,11 @@ import java.util.Date;
 
 public class MainActivity extends Activity {
     private enum RSSXMLTag {
-        TITLE, DATE, LINK, IGNORETAG;
+        TITLE, DATE, LINK, IGNORETAG, DESC;
     }
 
     private ArrayList<PostData> listData;
-    private String urlString = "http://www.iltalehti.fi/rss/digi.xml";
+    private String urlString = "http://www.iltalehti.fi/rss/uutiset.xml";
     private ListView postListView;
     private PostItemAdapter postAdapter;
 
@@ -52,9 +54,7 @@ public class MainActivity extends Activity {
     private OnItemClickListener onItemClickListener = new OnItemClickListener() {
 
         @Override
-        public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-                                long arg3) {
-            // TODO Auto-generated method stub
+        public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
             PostData data = listData.get(arg2 - 1);
 
             Bundle postInfo = new Bundle();
@@ -66,13 +66,70 @@ public class MainActivity extends Activity {
         }
     };
 
-    private class RssDataController extends
-            AsyncTask<String, Integer, ArrayList<PostData>> {
+    public void refresh(View view) {
+        recreate();
+    }
+
+    public void liiga(View view){
+        String urlString = "http://www.iltalehti.fi/rss/jaakiekko.xml";
+
+        new RssDataController().execute(urlString);
+
+                listData = new ArrayList<PostData>();
+                postListView = (ListView) this.findViewById(R.id.postListView);
+                postAdapter = new PostItemAdapter(this, R.layout.postitem, listData);
+                postListView.setAdapter(postAdapter);
+            }
+
+    public void fishing(View view){
+        String urlString = "http://www.kalamies.com/kalastus-uutiset?format=feed&type=rss";
+
+        new RssDataController().execute(urlString);
+
+        listData = new ArrayList<PostData>();
+        postListView = (ListView) this.findViewById(R.id.postListView);
+        postAdapter = new PostItemAdapter(this, R.layout.postitem, listData);
+        postListView.setAdapter(postAdapter);
+    }
+
+    public void homeland(View view){
+        String urlString = "http://www.iltalehti.fi/rss/kotimaa.xml";
+
+        new RssDataController().execute(urlString);
+
+        listData = new ArrayList<PostData>();
+        postListView = (ListView) this.findViewById(R.id.postListView);
+        postAdapter = new PostItemAdapter(this, R.layout.postitem, listData);
+        postListView.setAdapter(postAdapter);
+    }
+
+    public void hunting(View view){
+        String urlString = "http://riista.fi/feed/rss/";
+
+        new RssDataController().execute(urlString);
+
+        listData = new ArrayList<PostData>();
+        postListView = (ListView) this.findViewById(R.id.postListView);
+        postAdapter = new PostItemAdapter(this, R.layout.postitem, listData);
+        postListView.setAdapter(postAdapter);
+    }
+
+    public void it(View view){
+        String urlString = "http://www.iltalehti.fi/rss/digi.xml";
+
+        new RssDataController().execute(urlString);
+
+        listData = new ArrayList<PostData>();
+        postListView = (ListView) this.findViewById(R.id.postListView);
+        postAdapter = new PostItemAdapter(this, R.layout.postitem, listData);
+        postListView.setAdapter(postAdapter);
+    }
+
+    private class RssDataController extends AsyncTask<String, Integer, ArrayList<PostData>> {
         private RSSXMLTag currentTag;
 
         @Override
         protected ArrayList<PostData> doInBackground(String... params) {
-            // TODO Auto-generated method stub
             String urlStr = params[0];
             InputStream is = null;
             ArrayList<PostData> postDataList = new ArrayList<PostData>();
@@ -98,8 +155,7 @@ public class MainActivity extends Activity {
 
                 int eventType = xpp.getEventType();
                 PostData pdData = null;
-                SimpleDateFormat dateFormat = new SimpleDateFormat(
-                        "EEE, DD MMM yyyy HH:mm:ss");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy kk:mm:ss z");
                 while (eventType != XmlPullParser.END_DOCUMENT) {
                     if (eventType == XmlPullParser.START_DOCUMENT) {
 
@@ -113,11 +169,11 @@ public class MainActivity extends Activity {
                             currentTag = RSSXMLTag.LINK;
                         } else if (xpp.getName().equals("pubDate")) {
                             currentTag = RSSXMLTag.DATE;
+                        }else if (xpp.getName().equals("description")) {
+                            currentTag = RSSXMLTag.DESC;
                         }
                     } else if (eventType == XmlPullParser.END_TAG) {
                         if (xpp.getName().equals("item")) {
-                            // format the data here, otherwise format data in
-                            // Adapter
                             Date postDate = dateFormat.parse(pdData.postDate);
                             pdData.postDate = dateFormat.format(postDate);
                             postDataList.add(pdData);
@@ -127,7 +183,6 @@ public class MainActivity extends Activity {
                     } else if (eventType == XmlPullParser.TEXT) {
                         String content = xpp.getText();
                         content = content.trim();
-                        Log.d("debug", content);
                         if (pdData != null) {
                             switch (currentTag) {
                                 case TITLE:
@@ -157,6 +212,15 @@ public class MainActivity extends Activity {
                                         }
                                     }
                                     break;
+                                case DESC:
+                                    if (content.length() != 0) {
+                                        if (pdData.postDesc != null) {
+                                            pdData.postDesc += content;
+                                        } else {
+                                            pdData.postDesc = content;
+                                        }
+                                    }
+                                    break;
                                 default:
                                     break;
                             }
@@ -165,18 +229,13 @@ public class MainActivity extends Activity {
 
                     eventType = xpp.next();
                 }
-                Log.v("tst", String.valueOf((postDataList.size())));
             } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (XmlPullParserException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (ParseException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -185,11 +244,9 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(ArrayList<PostData> result) {
-            // TODO Auto-generated method stub
             for (int i = 0; i < result.size(); i++) {
                 listData.add(result.get(i));
             }
-
             postAdapter.notifyDataSetChanged();
         }
     }

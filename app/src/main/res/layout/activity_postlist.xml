@@ -1,3 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
+    android:layout_centerHorizontal="true"
+    tools:context=".MainActivity">
+
+
+    <LinearLayout
+
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:id="@+id/lin1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent">
+
+
+
+        <ImageButton
+            android:src="@mipmap/hockey"
+            android:id="@+id/tab1"
+            android:layout_width="55dp"
+            android:layout_height="60dp"
+            android:onClick="liiga"
+            android:background="@drawable/list_selector"
+            />
+
+        <ImageButton
+            android:src="@mipmap/computer"
+            android:id="@+id/tab2"
+            android:layout_width="55dp"
+            android:layout_height="60dp"
+            android:layout_alignRight="@+id/tab1"
+            android:background="@drawable/list_selector"
+            android:onClick="it"/>
+
+        <ImageButton
+            android:src="@mipmap/news"
+            android:id="@+id/tab3"
+            android:layout_width="55dp"
+            android:layout_height="60dp"
+            android:layout_alignRight="@+id/tab2"
+            android:background="@drawable/list_selector"
+            android:onClick="homeland"/>
+
+        <ImageButton
+            android:src="@mipmap/hunting"
+            android:id="@+id/tab4"
+            android:layout_width="55dp"
+            android:layout_height="60dp"
+            android:layout_alignRight="@+id/tab3"
+            android:background="@drawable/list_selector"
+            android:onClick="hunting"/>
+
+        <ImageButton
+            android:src="@mipmap/fishing"
+            android:id="@+id/tab5"
+            android:layout_width="55dp"
+            android:layout_height="60dp"
+            android:layout_alignRight="@+id/tab3"
+            android:background="@drawable/list_selector"
+            android:onClick="fishing"/>
+
+        <ImageButton
+            android:src="@mipmap/home"
+            android:id="@+id/tab6"
+            android:layout_width="55dp"
+            android:layout_height="60dp"
+            android:layout_alignRight="@+id/tab2"
+            android:background="@drawable/list_selector"
+            android:text="Home"
+            android:onClick="refresh"/>
+
+
+    </LinearLayout>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,10 +89,11 @@
 
     <TextView android:id="@+id/loadingProgress"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="37dp"/>
 
     <ListView
         android:id="@+id/postListView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 </LinearLayout>
+</RelativeLayout>
