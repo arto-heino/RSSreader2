@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -20,6 +21,7 @@ public class HandleXML {
     private String urlString = null;
     private XmlPullParserFactory xmlFactoryObject;
     public volatile boolean parsingComplete = false;
+    ArrayList postDataList = new ArrayList();
 
     public HandleXML(String url) {
         this.urlString = url;
@@ -40,39 +42,35 @@ public class HandleXML {
 
     public void parseXMLAndStoreIt(XmlPullParser myParser) {
         int event;
-        String text = null;
+        boolean insideItem = false;
 
         try {
             event = myParser.getEventType();
 
             while (event != XmlPullParser.END_DOCUMENT) {
-                String name = myParser.getName();
 
-                switch (event) {
-                    case XmlPullParser.START_TAG:
-                        break;
-
-                    case XmlPullParser.TEXT:
-                        text = myParser.getText();
-                        break;
-
-                    case XmlPullParser.END_TAG:
-
-                        if (name.equals("title")) {
-                            title = text;
-                        } else if (name.equals("link")) {
-                            link = text;
-                        } else if (name.equals("description")) {
-                            description = text;
-                        } else {
-                        }
-
-                        break;
+                if (event == XmlPullParser.START_TAG) {
+                    if (myParser.getName().equalsIgnoreCase("item")) {
+                        insideItem = true;
+                    } else if (myParser.getName().equalsIgnoreCase("url")) {
+                        insideItem = true;
+                    } else if (myParser.getName().equalsIgnoreCase("title")) {
+                        if (insideItem)
+                            this.title = myParser.nextText();
+                    } else if (myParser.getName().equalsIgnoreCase("link")) {
+                        if (insideItem)
+                            this.link = myParser.nextText() + "\n\n";
+                    } else if (myParser.getName().equalsIgnoreCase("description")) {
+                        if (insideItem)
+                            this.description = myParser.nextText() + "\n";
+                    }
+                } else if (event == XmlPullParser.END_TAG && myParser.getName().equalsIgnoreCase("item")) {
+                    insideItem = false;
                 }
-
+                postDataList.add(event);
                 event = myParser.next();
-            }
 
+            }
             parsingComplete = true;
         } catch (Exception e) {
             System.out.println(e);

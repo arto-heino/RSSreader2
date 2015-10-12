@@ -13,21 +13,23 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class PostItemAdapter extends ArrayAdapter<PostData> {
-    private Activity myContext;
-    private PostData[] datas;
+    private LayoutInflater inflater;
+    private ArrayList<PostData> datas;
 
     public PostItemAdapter(Context context, int textViewResourceId,
-                           PostData[] objects) {
+                           ArrayList<PostData> objects) {
         super(context, textViewResourceId, objects);
         // TODO Auto-generated constructor stub
-        myContext = (Activity) context;
+        inflater = ((Activity) context).getLayoutInflater();
         datas = objects;
     }
 
     static class ViewHolder {
         TextView postTitleView;
-        TextView postDescriptionView;
+        TextView postDateView;
         ImageView postThumbView;
     }
 
@@ -35,7 +37,6 @@ public class PostItemAdapter extends ArrayAdapter<PostData> {
         ViewHolder viewHolder;
 
         if (convertView == null) {
-            LayoutInflater inflater = myContext.getLayoutInflater();
             convertView = inflater.inflate(R.layout.postitem, null);
 
             viewHolder = new ViewHolder();
@@ -43,21 +44,20 @@ public class PostItemAdapter extends ArrayAdapter<PostData> {
                     .findViewById(R.id.postThumb);
             viewHolder.postTitleView = (TextView) convertView
                     .findViewById(R.id.postTitleLabel);
-            viewHolder.postDescriptionView = (TextView) convertView
-                    .findViewById(R.id.postDescriptionLabel);
-
+            viewHolder.postDateView = (TextView) convertView
+                    .findViewById(R.id.postDateLabel);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        if (datas[position].postThumbUrl == null) {
+        if (datas.get(position).postThumbUrl == null) {
             viewHolder.postThumbView
                     .setImageResource(R.mipmap.trash);
         }
 
-        viewHolder.postTitleView.setText(datas[position].postTitle);
-        viewHolder.postDescriptionView.setText(datas[position].postDescription);
+        viewHolder.postTitleView.setText(datas.get(position).postTitle);
+        viewHolder.postDateView.setText(datas.get(position).postDate);
 
         return convertView;
     }
